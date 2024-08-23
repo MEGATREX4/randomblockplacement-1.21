@@ -3,7 +3,7 @@
 	"id": "randomblockplacement",
 	"version": "${version}",
 	"name": "RandomBlockPlacement",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Simple placement of random blocks from hotbar!",
 	"authors": [
 		"MEGATREX4"
 	],

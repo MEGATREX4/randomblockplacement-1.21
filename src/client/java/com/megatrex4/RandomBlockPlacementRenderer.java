@@ -22,14 +22,14 @@ public class RandomBlockPlacementRenderer {
         MatrixStack matrixStack = drawContext.getMatrices();
         VertexConsumerProvider.Immediate immediate = client.getBufferBuilders().getEntityVertexConsumers();
 
-        // Set up alpha blending
         RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();  // Use the default blend function
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5F); // Set alpha to 0.5 for semi-translucent
 
-        // Draw the texture
-        drawContext.drawTexture(TEXTURE, x, y - 20, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        matrixStack.push();
 
-        // Disable alpha blending after rendering
+        drawContext.drawTexture(TEXTURE, x, y - 20, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        matrixStack.pop();
         RenderSystem.disableBlend();
     }
 }
