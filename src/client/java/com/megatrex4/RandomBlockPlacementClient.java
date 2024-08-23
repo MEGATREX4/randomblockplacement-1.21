@@ -57,7 +57,6 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 
 	public void handleBlockPlacement(ClientPlayerEntity player) {
 		if (randomPlacementMode && player.getMainHandStack().getItem() instanceof BlockItem) {
-			// Update hotbar slot after placing a block
 			randomizeHotbarSlot(player);
 		}
 	}
@@ -66,14 +65,12 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		int currentSlot = player.getInventory().selectedSlot;
 		int blockCount = 0;
 
-		// Count the number of block items in the hotbar
 		for (int i = 0; i < 9; i++) {
 			if (player.getInventory().getStack(i).getItem() instanceof BlockItem) {
 				blockCount++;
 			}
 		}
 
-		// If there's only one block item, do not change the slot
 		if (blockCount <= 1) {
 			return;
 		}
