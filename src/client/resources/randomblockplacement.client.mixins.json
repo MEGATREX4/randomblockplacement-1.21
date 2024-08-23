@@ -3,7 +3,11 @@
 	"package": "com.megatrex4.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"ExampleClientMixin",
+		"PlayerInteractBlockMixin"
+	],
+	"mixins": [
+		"PlayerInteractBlockMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

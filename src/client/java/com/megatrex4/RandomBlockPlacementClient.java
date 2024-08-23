@@ -2,19 +2,20 @@ package com.megatrex4;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.client.gui.DrawContext;
 
 import java.util.Random;
 
 public class RandomBlockPlacementClient implements ClientModInitializer {
 	private static boolean randomPlacementMode = false;
 	private static final Random random = new Random();
-	private boolean wasPlacingBlock = false;
+	private boolean wasRightClicking = false;
+	private static final RandomBlockPlacementClient INSTANCE = new RandomBlockPlacementClient();
 
 	@Override
 	public void onInitializeClient() {
@@ -23,14 +24,23 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.player != null && client.currentScreen == null) {
 				boolean isRightClicking = client.options.useKey.isPressed();
-				boolean isPlacingBlock = isRightClicking && !wasPlacingBlock;
+				boolean isPlacingBlock = isRightClicking && !wasRightClicking;
 
 				if (randomPlacementMode && isPlacingBlock) {
+					// Handle block placement
 					handleBlockPlacement(client.player);
-					wasPlacingBlock = true;
+					wasRightClicking = true;
 				} else if (!isRightClicking) {
-					wasPlacingBlock = false;
+					wasRightClicking = false;
 				}
+			}
+		});
+
+		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+			if (randomPlacementMode) {
+				int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
+				int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
+				RandomBlockPlacementRenderer.renderTexture(drawContext, screenWidth, screenHeight);
 			}
 		});
 	}
@@ -39,20 +49,16 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		randomPlacementMode = !randomPlacementMode;
 
 		MinecraftClient client = MinecraftClient.getInstance();
-		String message = randomPlacementMode ? "Enabled" : "Disabled";
-		if (client.player != null) {
-			client.player.sendMessage(Text.literal(message), true);
-		}
+//		String message = randomPlacementMode ? "Enabled" : "Disabled";
+//		if (client.player != null) {
+//			client.player.sendMessage(Text.literal(message), true);
+//		}
 	}
 
-	private void handleBlockPlacement(ClientPlayerEntity player) {
-		if (player.getMainHandStack().getItem() instanceof BlockItem) {
-			BlockHitResult hitResult = (BlockHitResult) player.raycast(20, 0, false);
-			BlockPos blockPos = hitResult.getBlockPos();
-
-			if (!player.clientWorld.getBlockState(blockPos).isAir()) {
-				randomizeHotbarSlot(player);
-			}
+	public void handleBlockPlacement(ClientPlayerEntity player) {
+		if (randomPlacementMode && player.getMainHandStack().getItem() instanceof BlockItem) {
+			// Update hotbar slot after placing a block
+			randomizeHotbarSlot(player);
 		}
 	}
 
@@ -78,5 +84,9 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		} while (randomSlot == currentSlot || !(player.getInventory().getStack(randomSlot).getItem() instanceof BlockItem));
 
 		player.getInventory().selectedSlot = randomSlot;
+	}
+
+	public static RandomBlockPlacementClient getInstance() {
+		return INSTANCE;
 	}
 }
