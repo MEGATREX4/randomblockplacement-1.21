@@ -27,7 +27,6 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 				boolean isPlacingBlock = isRightClicking && !wasRightClicking;
 
 				if (randomPlacementMode && isPlacingBlock) {
-					// Handle block placement
 					handleBlockPlacement(client.player);
 					wasRightClicking = true;
 				} else if (!isRightClicking) {
@@ -40,7 +39,6 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 			if (randomPlacementMode) {
 				int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
 				int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
-				RandomBlockPlacementRenderer.renderTexture(drawContext, screenWidth, screenHeight);
 			}
 		});
 	}
@@ -49,11 +47,15 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		randomPlacementMode = !randomPlacementMode;
 
 		MinecraftClient client = MinecraftClient.getInstance();
-//		String message = randomPlacementMode ? "Enabled" : "Disabled";
-//		if (client.player != null) {
-//			client.player.sendMessage(Text.literal(message), true);
-//		}
+		String translationKey = randomPlacementMode
+				? "randomblockplacement.enabled"
+				: "randomblockplacement.disabled";
+
+		if (client.player != null) {
+			client.player.sendMessage(Text.translatable(translationKey), true);
+		}
 	}
+
 
 	public void handleBlockPlacement(ClientPlayerEntity player) {
 		if (randomPlacementMode && player.getMainHandStack().getItem() instanceof BlockItem) {
