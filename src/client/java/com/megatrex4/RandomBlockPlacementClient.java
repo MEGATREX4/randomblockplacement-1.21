@@ -37,6 +37,7 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 
 		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
 			if (randomPlacementMode) {
+				RandomPlacementHud.registerHud();
 				int screenWidth = MinecraftClient.getInstance().getWindow().getScaledWidth();
 				int screenHeight = MinecraftClient.getInstance().getWindow().getScaledHeight();
 			}
@@ -46,14 +47,16 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 	public static void onRandomPlaceKeyPressed() {
 		randomPlacementMode = !randomPlacementMode;
 
-		MinecraftClient client = MinecraftClient.getInstance();
-		String translationKey = randomPlacementMode
-				? "randomblockplacement.enabled"
-				: "randomblockplacement.disabled";
+		RandomPlacementHud.toggleRandomPlacementMode();
 
-		if (client.player != null) {
-			client.player.sendMessage(Text.translatable(translationKey), true);
-		}
+//		MinecraftClient client = MinecraftClient.getInstance();
+//		String translationKey = randomPlacementMode
+//				? "randomblockplacement.enabled"
+//				: "randomblockplacement.disabled";
+//
+//		if (client.player != null) {
+//			client.player.sendMessage(Text.translatable(translationKey), true);
+//		}
 	}
 
 
