@@ -1,14 +1,16 @@
 package com.megatrex4;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.text.Text;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 import java.util.Random;
@@ -93,25 +95,29 @@ public class RandomBlockPlacementClient implements ClientModInitializer {
 		return INSTANCE;
 	}
 
-	private void renderIcon(DrawContext drawContext) {
+	private void renderIcon(MatrixStack matrixStack) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		int screenWidth = client.getWindow().getScaledWidth();
 		int screenHeight = client.getWindow().getScaledHeight();
+
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+
+		matrixStack.push();
 
 		int iconSize = 16;
 		int x = (screenWidth - iconSize) / 2; // Center horizontally
 		int y = (screenHeight - iconSize) / 2 - 13; // Slightly above the crosshair
 
-		// Use getGuiTextured for textures
-		drawContext.drawTexture(
-				texture -> RenderLayer.getGuiTextured(ICON_TEXTURE), // Correct RenderLayer
-				ICON_TEXTURE, // Texture identifier
-				x, y,         // Position on screen
-				0.0f, 0.0f,   // Texture coordinates
-				iconSize, iconSize, // Texture width and height
-				iconSize, iconSize  // Actual texture dimensions
-		);
+		// Directly use the Identifier for the texture
+		RenderSystem.setShaderTexture(0, ICON_TEXTURE);
+		DrawableHelper.drawTexture(matrixStack, x, y, 0, 0, iconSize, iconSize, iconSize, iconSize);
+
+		matrixStack.pop();
+
+		RenderSystem.disableBlend();
 	}
+
 
 
 
